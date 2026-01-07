@@ -1,46 +1,49 @@
 package com.billing.controller;
 
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import com.billing.dto.EmployeeRequest;
+import com.billing.dto.LoginRequest;
 import com.billing.entity.Employee;
 import com.billing.service.EmployeeService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/employees")
 @CrossOrigin(origins = "http://localhost:5173")
 public class EmployeeController {
 
-    private final EmployeeService service;
+    @Autowired
+    private EmployeeService service;
 
-    public EmployeeController(EmployeeService service) {
-        this.service = service;
-    }
-
-    // CREATE EMPLOYEE
-    @PostMapping
-    public Employee saveEmployee(@RequestBody Employee employee) {
-        return service.saveEmployee(employee);
-    }
-
-    // GET ALL EMPLOYEES
     @GetMapping
     public List<Employee> getAllEmployees() {
-        return service.getAllEmployees();
+        return service.getAll();
     }
 
-    // GET EMPLOYEE BY ID
-    @GetMapping("/{id}")
-    public Employee getEmployeeById(@PathVariable Long id) {
-        return service.getEmployeeById(id);
+    @PostMapping
+    public Employee addEmployee(@RequestBody EmployeeRequest request) {
+        return service.addEmployee(request);
     }
 
-    // DELETE EMPLOYEE
+    @PutMapping("/{id}")
+    public Employee update(
+            @PathVariable Long id,
+            @RequestBody EmployeeRequest request) {
+        return service.updateEmployee(id, request);
+    }
+
     @DeleteMapping("/{id}")
-    public String deleteEmployee(@PathVariable Long id) {
-        service.deleteEmployee(id);
-        return "Employee deleted successfully";
+    public void deleteEmployee(@PathVariable Long id) {
+        service.delete(id);
     }
+
+    // ✅ LOGIN API (THIS FIXES 405 ERROR)
+    @PostMapping("/login")
+    public Employee login(@RequestBody LoginRequest request) {
+        return service.login(request);
+    }
+
 }
