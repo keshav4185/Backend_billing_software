@@ -7,6 +7,8 @@ public interface BillingService {
 
     Company saveCompany(Company company);
     Customer saveCustomer(Customer customer);
+    Customer updateCustomer(Long id, Customer customer);
+    void deleteCustomer(Long id);
     List<Customer> getAllCustomers();
     List<Product> getAllProducts();
     Invoice saveInvoice(Invoice invoice);

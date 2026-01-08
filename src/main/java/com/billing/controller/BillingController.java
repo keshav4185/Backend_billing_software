@@ -44,6 +44,18 @@ public class BillingController {
     public List<Customer> getCustomers() {
         return billingService.getAllCustomers();
     }
+    
+    @PutMapping("/customer/{id}")
+    public Customer updateCustomer(@PathVariable Long id, @RequestBody Customer customer) {
+        return billingService.updateCustomer(id, customer);
+    }
+
+    @DeleteMapping("/customer/{id}")
+    public String deleteCustomer(@PathVariable Long id) {
+        billingService.deleteCustomer(id);
+        return "Customer deleted successfully";
+    }
+
 
     @GetMapping("/products")
     public List<Product> getProducts() {
