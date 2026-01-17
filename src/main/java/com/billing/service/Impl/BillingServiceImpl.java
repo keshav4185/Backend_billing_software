@@ -85,6 +85,7 @@ public class BillingServiceImpl implements BillingService {
     // ---------------- INVOICE ----------------
     @Override
     public Invoice saveInvoice(Invoice invoice) {
+
         double subTotal = 0.0;
         double totalCgst = 0.0;
         double totalSgst = 0.0;
@@ -93,6 +94,22 @@ public class BillingServiceImpl implements BillingService {
         for (InvoiceItem item : invoice.getItems()) {
             item.setInvoice(invoice);
 
+            // ✅ IF FRONTEND ALREADY CALCULATED
+            if (item.getRowTotal() != null) {
+
+                double baseAmount =
+                        (item.getPrice() != null ? item.getPrice() : 0.0) *
+                        (item.getQuantity() != null ? item.getQuantity() : 0.0);
+
+                subTotal += baseAmount;
+                totalCgst += item.getCgstAmount() != null ? item.getCgstAmount() : 0.0;
+                totalSgst += item.getSgstAmount() != null ? item.getSgstAmount() : 0.0;
+                totalAmount += item.getRowTotal();
+
+                continue; // 🔥 DO NOT RECALCULATE
+            }
+
+            // ⛑ FALLBACK CALCULATION (SAFETY)
             double price = item.getPrice() != null ? item.getPrice() : 0.0;
             double qty = item.getQuantity() != null ? item.getQuantity() : 0.0;
             double discountPercent = item.getDiscount() != null ? item.getDiscount() : 0.0;
@@ -121,9 +138,13 @@ public class BillingServiceImpl implements BillingService {
         invoice.setTotalCgst(totalCgst);
         invoice.setTotalSgst(totalSgst);
         invoice.setTotalAmount(totalAmount);
+
         invoice.setBalanceAmount(
-                invoice.getAdvanceAmount() != null ? totalAmount - invoice.getAdvanceAmount() : totalAmount
+                invoice.getAdvanceAmount() != null
+                        ? totalAmount - invoice.getAdvanceAmount()
+                        : totalAmount
         );
+
         invoice.setInvoiceDate(LocalDate.now());
 
         return invoiceRepository.save(invoice);
@@ -131,6 +152,7 @@ public class BillingServiceImpl implements BillingService {
 
     @Override
     public Invoice updateInvoice(Long id, Invoice invoice) {
+
         Invoice existing = invoiceRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Invoice not found"));
 
@@ -151,6 +173,21 @@ public class BillingServiceImpl implements BillingService {
         for (InvoiceItem item : invoice.getItems()) {
             item.setInvoice(existing);
 
+            if (item.getRowTotal() != null) {
+
+                double baseAmount =
+                        (item.getPrice() != null ? item.getPrice() : 0.0) *
+                        (item.getQuantity() != null ? item.getQuantity() : 0.0);
+
+                subTotal += baseAmount;
+                totalCgst += item.getCgstAmount() != null ? item.getCgstAmount() : 0.0;
+                totalSgst += item.getSgstAmount() != null ? item.getSgstAmount() : 0.0;
+                totalAmount += item.getRowTotal();
+
+                existing.getItems().add(item);
+                continue;
+            }
+
             double price = item.getPrice() != null ? item.getPrice() : 0.0;
             double qty = item.getQuantity() != null ? item.getQuantity() : 0.0;
             double discountPercent = item.getDiscount() != null ? item.getDiscount() : 0.0;
@@ -169,20 +206,23 @@ public class BillingServiceImpl implements BillingService {
             item.setCgstAmount(cgst);
             item.setSgstAmount(sgst);
 
-            existing.getItems().add(item);
-
             subTotal += baseAmount;
             totalCgst += cgst;
             totalSgst += sgst;
             totalAmount += rowTotal;
+
+            existing.getItems().add(item);
         }
 
         existing.setSubTotal(subTotal);
         existing.setTotalCgst(totalCgst);
         existing.setTotalSgst(totalSgst);
         existing.setTotalAmount(totalAmount);
+
         existing.setBalanceAmount(
-                invoice.getAdvanceAmount() != null ? totalAmount - invoice.getAdvanceAmount() : totalAmount
+                invoice.getAdvanceAmount() != null
+                        ? totalAmount - invoice.getAdvanceAmount()
+                        : totalAmount
         );
 
         return invoiceRepository.save(existing);
