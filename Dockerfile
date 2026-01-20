@@ -1,17 +1,30 @@
-# Use Java 17 runtime (lightweight Alpine version)
-FROM eclipse-temurin:17-jdk-alpine
+# =========================
+# 1️⃣ BUILD STAGE
+# =========================
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 
-# Set working directory inside container
 WORKDIR /app
 
-# Copy the Spring Boot jar built by Maven
-COPY target/backend-0.0.1-SNAPSHOT.jar app.jar
+# Copy pom.xml first (cache optimization)
+COPY pom.xml .
+RUN mvn dependency:go-offline
 
-# Expose port 8080 (Render default)
+# Copy source code
+COPY src ./src
+
+# Build jar
+RUN mvn clean package -DskipTests
+
+# =========================
+# 2️⃣ RUN STAGE
+# =========================
+FROM eclipse-temurin:17-jdk-alpine
+
+WORKDIR /app
+
+# Copy jar from build stage
+COPY --from=build /app/target/*.jar app.jar
+
 EXPOSE 8080
 
-# Use environment variables for DB if needed (optional for Dockerfile)
-# They will be set in Render dashboard, so no change here
-
-# Run the Spring Boot application
 ENTRYPOINT ["java", "-jar", "app.jar"]
