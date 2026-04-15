@@ -14,7 +14,7 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                .allowedOriginPatterns("https://footware-billing.vercel.app", "http://localhost:*")
+                        .allowedOrigins("https://footware-billing.vercel.app", "http://http://localhost:5174/")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);
