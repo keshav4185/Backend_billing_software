@@ -5,9 +5,11 @@ import org.springframework.stereotype.Service;
 
 import com.billing.dto.AdminLoginRequest;
 import com.billing.dto.AdminUpdateRequest;
-
+import com.billing.entity.Admin;
 import com.billing.repository.AdminRepository;
 import com.billing.service.AdminService;
+
+import java.util.List;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -24,15 +26,27 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public boolean updateCredentials(AdminUpdateRequest request) {
-
         return adminRepository.findByUsername(request.getOldUsername())
                 .filter(admin -> admin.getPassword().equals(request.getOldPassword()))
                 .map(admin -> {
                     admin.setUsername(request.getNewUsername());
                     admin.setPassword(request.getNewPassword());
+                    admin.setName(request.getName());
+                    admin.setEmail(request.getEmail());
+                    admin.setPhone(request.getPhone());
+                    admin.setJoinDate(request.getJoinDate());
                     adminRepository.save(admin);
                     return true;
                 })
                 .orElse(false);
+    }
+
+    @Override
+    public Admin getProfile() {
+        List<Admin> admins = adminRepository.findAll();
+        if (admins.isEmpty()) {
+            return null;
+        }
+        return admins.get(0); // Return the first admin
     }
 }

@@ -10,15 +10,19 @@ import com.billing.service.AdminService;
 
 @RestController
 @RequestMapping("/api/admin")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "*") // Allow all origins for development
 public class AdminController {
 
     @Autowired
     private AdminService adminService;
 
+    @GetMapping("/profile")
+    public ResponseEntity<?> getProfile() {
+        return ResponseEntity.ok(adminService.getProfile());
+    }
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AdminLoginRequest request) {
-
         if (adminService.login(request)) {
             return ResponseEntity.ok("Login successful");
         }
@@ -27,7 +31,6 @@ public class AdminController {
 
     @PutMapping("/update")
     public ResponseEntity<?> update(@RequestBody AdminUpdateRequest request) {
-
         if (adminService.updateCredentials(request)) {
             return ResponseEntity.ok("Admin credentials updated successfully");
         }
