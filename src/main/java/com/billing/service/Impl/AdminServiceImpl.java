@@ -29,12 +29,19 @@ public class AdminServiceImpl implements AdminService {
         return adminRepository.findByUsername(request.getOldUsername())
                 .filter(admin -> admin.getPassword().equals(request.getOldPassword()))
                 .map(admin -> {
-                    admin.setUsername(request.getNewUsername());
-                    admin.setPassword(request.getNewPassword());
+                    // Only update if a new value is provided and not empty
+                    if (request.getNewUsername() != null && !request.getNewUsername().trim().isEmpty()) {
+                        admin.setUsername(request.getNewUsername());
+                    }
+                    if (request.getNewPassword() != null && !request.getNewPassword().trim().isEmpty()) {
+                        admin.setPassword(request.getNewPassword());
+                    }
+                    
                     admin.setName(request.getName());
                     admin.setEmail(request.getEmail());
                     admin.setPhone(request.getPhone());
                     admin.setJoinDate(request.getJoinDate());
+                    
                     adminRepository.save(admin);
                     return true;
                 })
@@ -47,6 +54,6 @@ public class AdminServiceImpl implements AdminService {
         if (admins.isEmpty()) {
             return null;
         }
-        return admins.get(0); // Return the first admin
+        return admins.get(0);
     }
 }
