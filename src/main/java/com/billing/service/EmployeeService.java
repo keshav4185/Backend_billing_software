@@ -18,7 +18,7 @@ public class EmployeeService {
 
     public Employee addEmployee(EmployeeRequest request) {
         if (repo.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already exists");
+            throw new IllegalArgumentException("Email '" + request.getEmail() + "' is already registered.");
         }
 
         Employee emp = new Employee();
