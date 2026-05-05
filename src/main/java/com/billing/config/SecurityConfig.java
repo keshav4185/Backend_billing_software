@@ -11,12 +11,12 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
         http
-            .cors(Customizer.withDefaults())   // ✅ VERY IMPORTANT
             .csrf(csrf -> csrf.disable())
+            .cors(Customizer.withDefaults())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/admin/**").permitAll()
+                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll() // ✅ ALLOW ALL PREFLIGHT
+                .requestMatchers("/api/**").permitAll()
                 .anyRequest().permitAll()
             );
 
