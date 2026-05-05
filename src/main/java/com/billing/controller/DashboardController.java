@@ -6,8 +6,7 @@ import com.billing.dto.DashboardSummaryDTO;
 import com.billing.service.DashboardService;
 
 @RestController
-@RequestMapping("/api/billing/dashboard")
-@CrossOrigin(origins = "http://localhost:5173")
+@RequestMapping("/api/dashboard")
 public class DashboardController {
 
     private final DashboardService dashboardService;

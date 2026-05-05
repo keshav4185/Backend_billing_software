@@ -9,7 +9,6 @@ import com.billing.service.BillingService;
 
 @RestController
 @RequestMapping("/api/billing")
-@CrossOrigin(origins = "http://localhost:5173")
 public class BillingController {
 
     private final BillingService billingService;
