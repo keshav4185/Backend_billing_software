@@ -17,6 +17,11 @@ public class BillingController {
         this.billingService = billingService;
     }
 
+    @GetMapping("/test")
+    public String test() {
+        return "Backend is ALIVE";
+    }
+
     // ---------------- COMPANY ----------------
     @PostMapping("/company")
     public Company saveCompany(@RequestBody Company company) {
