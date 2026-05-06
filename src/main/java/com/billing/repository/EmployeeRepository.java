@@ -8,6 +8,7 @@ import com.billing.entity.Employee;
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
 	boolean existsByEmail(String email);
+	boolean existsByPhoneAndName(String phone, String name);
 	Optional<Employee> findByEmpIdAndEmailAndPassword(
 		    String empId,
 		    String email,

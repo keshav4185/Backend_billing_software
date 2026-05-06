@@ -20,6 +20,9 @@ public class EmployeeService {
         if (repo.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("Email '" + request.getEmail() + "' is already registered.");
         }
+        if (repo.existsByPhoneAndName(request.getPhone(), request.getName())) {
+            throw new IllegalArgumentException("Employee with same name and phone number already exists.");
+        }
 
         Employee emp = new Employee();
         emp.setEmpId(request.getEmpId());

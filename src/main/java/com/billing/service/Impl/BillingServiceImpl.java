@@ -304,6 +304,9 @@ public class BillingServiceImpl implements BillingService {
     // ---------------- CUSTOMER ----------------
     @Override
     public Customer saveCustomer(Customer customer) {
+        if (customerRepository.existsByPhoneAndName(customer.getPhone(), customer.getName())) {
+            throw new IllegalArgumentException("Customer with same name and phone number already exists.");
+        }
         return customerRepository.save(customer);
     }
 
